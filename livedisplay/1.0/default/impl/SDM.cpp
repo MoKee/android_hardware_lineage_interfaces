@@ -27,7 +27,6 @@
 #define DPPS_BUF_SIZE 64
 
 #define FEATURE_VER_SW_PA_API 0x00000001
-#define FEATURE_VER_SW_COLORBAL_API 0x00000003
 #define FEATURE_VER_SW_SAVEMODES_API 0x00000004
 
 #define FOSS_ON "foss:on"
@@ -83,7 +82,7 @@ status_t SDM::initialize() {
 
 status_t SDM::deinitialize() {
     SDMController::getInstance().deinit(mHandle, 0);
-    mHandle = -1;
+    mHandle = 0;
     return OK;
 }
 
@@ -108,7 +107,7 @@ uint32_t SDM::getNumDisplayModes() {
 }
 
 sp<disp_mode> SDM::getDisplayModeById(int32_t id) {
-    vector<sp<disp_mode>> profiles;
+    std::vector<sp<disp_mode>> profiles;
     status_t rc = getDisplayModes(profiles);
     if (rc == OK) {
         for (const auto& mode : profiles) {
@@ -145,7 +144,7 @@ status_t SDM::setModeState(sp<disp_mode> mode, bool state) {
     return BAD_VALUE;
 }
 
-status_t SDM::getDisplayModes(vector<sp<disp_mode>>& profiles) {
+status_t SDM::getDisplayModes(std::vector<sp<disp_mode>>& profiles) {
     status_t rc = OK;
 
     uint32_t count = getNumDisplayModes();
@@ -286,9 +285,6 @@ bool SDM::hasFeature(Feature feature) {
         case Feature::DISPLAY_MODES:
             id = FEATURE_VER_SW_SAVEMODES_API;
             break;
-        case Feature::COLOR_BALANCE:
-            id = FEATURE_VER_SW_COLORBAL_API;
-            break;
         case Feature::PICTURE_ADJUSTMENT:
             id = FEATURE_VER_SW_PA_API;
             break;
@@ -309,19 +305,8 @@ bool SDM::hasFeature(Feature feature) {
         return false;
     }
 
-    // Color balance depends on calibration data in SDM
-    if (feature == Feature::DISPLAY_MODES || feature == Feature::COLOR_BALANCE) {
-        if (getNumDisplayModes() > 0) {
-            // make sure the range isn't zero
-            if (feature == Feature::COLOR_BALANCE) {
-                Range r;
-                if (getColorBalanceRange(r) == OK && isNonZero(r)) {
-                    return true;
-                }
-                return false;
-            }
-            return true;
-        }
+    if (feature == Feature::DISPLAY_MODES) {
+        return getNumDisplayModes() > 0;
     } else if (feature == Feature::PICTURE_ADJUSTMENT) {
         HSICRanges r;
         if (getPictureAdjustmentRanges(r) == OK && r.isValid()) {
@@ -344,13 +329,6 @@ status_t SDM::saveInitialDisplayMode() {
         }
     }
     return OK;
-}
-
-status_t SDM::getColorBalanceRange(Range& range) {
-    status_t rc = SDMController::getInstance().get_global_color_balance_range(mHandle, 0, &range);
-    LOG(VERBOSE) << "getColorBalanceRange: min=" << range.min << " max=" << range.max
-                 << " step=" << range.step;
-    return rc;
 }
 
 status_t SDM::getPictureAdjustment(HSIC& hsic) {
@@ -451,19 +429,6 @@ status_t SDM::setAdaptiveBacklightEnabled(bool enabled) {
 
 bool SDM::isAdaptiveBacklightEnabled() {
     return mCachedFOSSStatus;
-}
-
-int32_t SDM::getColorBalance() {
-    int32_t value = -1;
-    uint32_t flags = 0;
-    if (SDMController::getInstance().get_global_color_balance(mHandle, 0, &value, &flags) != 0) {
-        value = 0;
-    }
-    return value;
-}
-
-status_t SDM::setColorBalance(int32_t balance) {
-    return SDMController::getInstance().set_global_color_balance(mHandle, 0, balance, 0);
 }
 
 status_t SDM::setPictureAdjustment(const HSIC& hsic) {

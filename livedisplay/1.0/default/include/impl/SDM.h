@@ -21,6 +21,8 @@
 #include "ColorBackend.h"
 #include "controller/SDMController.h"
 
+#include <vector>
+
 namespace vendor {
 namespace mokee {
 namespace livedisplay {
@@ -60,7 +62,7 @@ struct hsic_config {
 
 class SDM : public ColorBackend {
   public:
-    virtual status_t getDisplayModes(vector<sp<disp_mode>>& profiles) override;
+    virtual status_t getDisplayModes(std::vector<sp<disp_mode>>& profiles) override;
     virtual sp<disp_mode> getCurrentDisplayMode() override;
     virtual sp<disp_mode> getDefaultDisplayMode() override;
     virtual status_t setDisplayMode(int32_t modeID, bool makeDefault) override;
@@ -75,9 +77,15 @@ class SDM : public ColorBackend {
         return false;
     }
 
-    virtual status_t getColorBalanceRange(Range& range) override;
-    virtual int32_t getColorBalance() override;
-    virtual status_t setColorBalance(int32_t balance) override;
+    virtual status_t getColorBalanceRange(Range& /* range */) override {
+        return NO_INIT;
+    }
+    virtual int32_t getColorBalance() override {
+        return 0;
+    }
+    virtual status_t setColorBalance(int32_t /* balance */) override {
+        return NO_INIT;
+    }
 
     virtual status_t getPictureAdjustmentRanges(HSICRanges& ranges) override;
     virtual status_t setPictureAdjustment(const HSIC& hsic) override;
