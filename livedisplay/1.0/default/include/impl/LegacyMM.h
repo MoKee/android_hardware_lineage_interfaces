@@ -18,7 +18,6 @@
 #define VENDOR_MOKEE_LIVEDISPLAY_V1_0_LEGACYMM_H
 
 #include "ColorBackend.h"
-#include "controller/LegacyMMController.h"
 
 namespace vendor {
 namespace mokee {
