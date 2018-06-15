@@ -60,8 +60,6 @@ using ::android::OK;
 using ::android::sp;
 using ::android::status_t;
 
-sp<Color> Color::sInstance = nullptr;
-
 Color::Color() : mConnected(false), mBackend(nullptr) {
 #if defined(COLOR_BACKEND_SDM)
     mBackend = std::make_unique<SDM>();
@@ -81,6 +79,10 @@ void Color::reset() {
     }
     mFeatures = 0;
     mConnected = false;
+}
+
+bool Color::check(Feature f) {
+    return connect() && (mFeatures & (uint32_t)f);
 }
 
 void Color::error(const char* msg) {
@@ -116,13 +118,6 @@ bool Color::connect() {
     mConnected = true;
 
     return mFeatures > 0;
-}
-
-sp<Color> Color::getInstance() {
-    if (sInstance == nullptr) {
-        sInstance = new Color();
-    }
-    return sInstance;
 }
 
 Return<Features> Color::getSupportedFeatures() {
