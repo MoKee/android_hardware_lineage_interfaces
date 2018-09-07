@@ -31,7 +31,7 @@ cc_defaults {
         "libhidlbase",
         "libhidltransport",
         "libutils",
-        "vendor.mokee.livedisplay@1.0_vendor",
+        "vendor.mokee.livedisplay@1.0",
     ],
 }
 
