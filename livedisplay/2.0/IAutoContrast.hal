@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vendor.lineage.livedisplay@2.0;
+package vendor.mokee.livedisplay@2.0;
 
 interface IAutoContrast {
     isEnabled() generates (bool rc);

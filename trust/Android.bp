@@ -26,19 +26,19 @@ cc_defaults {
         "libhidlbase",
         "libhidltransport",
         "libutils",
-        "vendor.lineage.trust@1.0",
+        "vendor.mokee.trust@1.0",
     ],
 }
 
 cc_binary {
-    name: "lineage.trust@1.0-service",
-    init_rc: ["lineage.trust@1.0-service.rc"],
+    name: "mokee.trust@1.0-service",
+    init_rc: ["mokee.trust@1.0-service.rc"],
     defaults: ["trust_defaults"],
 }
 
 cc_binary {
-    name: "vendor.lineage.trust@1.0-service",
-    init_rc: ["vendor.lineage.trust@1.0-service.rc"],
+    name: "vendor.mokee.trust@1.0-service",
+    init_rc: ["vendor.mokee.trust@1.0-service.rc"],
     defaults: ["trust_defaults"],
     proprietary: true,
 }

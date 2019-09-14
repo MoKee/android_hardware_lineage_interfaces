@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vendor.lineage.trust@1.0;
+package vendor.mokee.trust@1.0;
 
 interface IUsbRestrict {
     isEnabled() generates (bool rc);

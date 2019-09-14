@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package vendor.lineage.touch@1.0;
+package vendor.mokee.touch@1.0;
 
 struct Gesture {
     int32_t id;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package vendor.lineage.power@1.0;
+package vendor.mokee.power@1.0;
 
-interface ILineagePower {
+interface IMoKeePower {
     /**
      * getFeature() is called to get the current value of a particular
      * feature or capability from the hardware or PowerHAL
@@ -23,5 +23,5 @@ interface ILineagePower {
      * @param feature Feature which needs to get
      * @return the state of power states the device supports
      */
-    getFeature(LineageFeature feature) generates (int32_t value);
+    getFeature(MoKeeFeature feature) generates (int32_t value);
 };
