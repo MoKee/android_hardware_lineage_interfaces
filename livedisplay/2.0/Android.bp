@@ -11,6 +11,7 @@ hidl_interface {
         "IColorEnhancement.hal",
         "IDisplayColorCalibration.hal",
         "IDisplayModes.hal",
+        "IFlickerFree.hal",
         "IPictureAdjustment.hal",
         "IReadingEnhancement.hal",
         "ISunlightEnhancement.hal",
