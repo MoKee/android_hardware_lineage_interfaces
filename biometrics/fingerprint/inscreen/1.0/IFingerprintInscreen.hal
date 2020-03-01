@@ -81,6 +81,10 @@ interface IFingerprintInscreen {
      */
     shouldBoostBrightness() generates (bool ret);
     /**
+     * Enable / disable Screen High Brightness Mode.
+     */
+    setScreenHBMModeEnable(bool enable);
+    /**
      * This function is used to register a callback function which is
      * called by the HAL whenever there is a finger up/down event.
      */
