@@ -21,7 +21,8 @@
 #include <map>
 
 #include <android-base/macros.h>
-#include <android/hardware/wifi/1.3/IWifiChip.h>
+#include <android/hardware/wifi/1.4/IWifiChip.h>
+#include <android/hardware/wifi/1.4/IWifiRttController.h>
 
 #include "hidl_callback_util.h"
 #include "ringbuffer.h"
@@ -37,7 +38,7 @@
 namespace android {
 namespace hardware {
 namespace wifi {
-namespace V1_3 {
+namespace V1_4 {
 namespace implementation {
 using namespace android::hardware::wifi::V1_0;
 
@@ -46,7 +47,7 @@ using namespace android::hardware::wifi::V1_0;
  * Since there is only a single chip instance used today, there is no
  * identifying handle information stored here.
  */
-class WifiChip : public V1_3::IWifiChip {
+class WifiChip : public V1_4::IWifiChip {
    public:
     WifiChip(
         ChipId chip_id,
@@ -70,7 +71,7 @@ class WifiChip : public V1_3::IWifiChip {
     // marked valid before processing them.
     void invalidate();
     bool isValid();
-    std::set<sp<V1_2::IWifiChipEventCallback>> getEventCallbacks();
+    std::set<sp<IWifiChipEventCallback>> getEventCallbacks();
 
     // HIDL methods exposed.
     Return<void> getId(getId_cb hidl_status_cb) override;
@@ -152,6 +153,12 @@ class WifiChip : public V1_3::IWifiChip {
         getCapabilities_cb hidl_status_cb) override;
     Return<void> debug(const hidl_handle& handle,
                        const hidl_vec<hidl_string>& options) override;
+    Return<void> createRttController_1_4(
+        const sp<IWifiIface>& bound_iface,
+        createRttController_1_4_cb hidl_status_cb) override;
+    Return<void> registerEventCallback_1_4(
+        const sp<IWifiChipEventCallback>& event_callback,
+        registerEventCallback_1_4_cb hidl_status_cb) override;
 
    private:
     void invalidateAndRemoveAllIfaces();
@@ -190,13 +197,13 @@ class WifiChip : public V1_3::IWifiChip {
     std::pair<WifiStatus, sp<IWifiP2pIface>> getP2pIfaceInternal(
         const std::string& ifname);
     WifiStatus removeP2pIfaceInternal(const std::string& ifname);
-    std::pair<WifiStatus, sp<IWifiStaIface>> createStaIfaceInternal();
+    std::pair<WifiStatus, sp<V1_3::IWifiStaIface>> createStaIfaceInternal();
     std::pair<WifiStatus, std::vector<hidl_string>> getStaIfaceNamesInternal();
-    std::pair<WifiStatus, sp<IWifiStaIface>> getStaIfaceInternal(
+    std::pair<WifiStatus, sp<V1_3::IWifiStaIface>> getStaIfaceInternal(
         const std::string& ifname);
     WifiStatus removeStaIfaceInternal(const std::string& ifname);
-    std::pair<WifiStatus, sp<IWifiRttController>> createRttControllerInternal(
-        const sp<IWifiIface>& bound_iface);
+    std::pair<WifiStatus, sp<V1_0::IWifiRttController>>
+    createRttControllerInternal(const sp<IWifiIface>& bound_iface);
     std::pair<WifiStatus, std::vector<WifiDebugRingBufferStatus>>
     getDebugRingBuffersStatusInternal();
     WifiStatus startLoggingToDebugRingBufferInternal(
@@ -217,6 +224,10 @@ class WifiChip : public V1_3::IWifiChip {
         const sp<V1_2::IWifiChipEventCallback>& event_callback);
     WifiStatus selectTxPowerScenarioInternal_1_2(TxPowerScenario scenario);
     std::pair<WifiStatus, uint32_t> getCapabilitiesInternal_1_3();
+    std::pair<WifiStatus, sp<IWifiRttController>>
+    createRttControllerInternal_1_4(const sp<IWifiIface>& bound_iface);
+    WifiStatus registerEventCallbackInternal_1_4(
+        const sp<IWifiChipEventCallback>& event_callback);
     WifiStatus handleChipConfiguration(
         std::unique_lock<std::recursive_mutex>* lock, ChipModeId mode_id);
     WifiStatus registerDebugRingBufferCallback();
@@ -266,14 +277,14 @@ class WifiChip : public V1_3::IWifiChip {
     // registration mechanism. Use this to check if we have already
     // registered a callback.
     bool debug_ring_buffer_cb_registered_;
-    hidl_callback_util::HidlCallbackHandler<V1_2::IWifiChipEventCallback>
+    hidl_callback_util::HidlCallbackHandler<IWifiChipEventCallback>
         event_cb_handler_;
 
     DISALLOW_COPY_AND_ASSIGN(WifiChip);
 };
 
 }  // namespace implementation
-}  // namespace V1_3
+}  // namespace V1_4
 }  // namespace wifi
 }  // namespace hardware
 }  // namespace android

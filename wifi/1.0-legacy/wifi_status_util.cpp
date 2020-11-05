@@ -19,7 +19,7 @@
 namespace android {
 namespace hardware {
 namespace wifi {
-namespace V1_3 {
+namespace V1_4 {
 namespace implementation {
 
 std::string legacyErrorToString(legacy_hal::wifi_error error) {
@@ -46,6 +46,8 @@ std::string legacyErrorToString(legacy_hal::wifi_error error) {
             return "BUSY";
         case legacy_hal::WIFI_ERROR_UNKNOWN:
             return "UNKNOWN";
+        default:
+            return "UNKNOWN ERROR";
     }
 }
 
@@ -92,6 +94,10 @@ WifiStatus createWifiStatusFromLegacyError(legacy_hal::wifi_error error,
 
         case legacy_hal::WIFI_ERROR_UNKNOWN:
             return createWifiStatus(WifiStatusCode::ERROR_UNKNOWN, "unknown");
+
+        default:
+            return createWifiStatus(WifiStatusCode::ERROR_UNKNOWN,
+                                    "unknown error");
     }
 }
 
@@ -100,7 +106,7 @@ WifiStatus createWifiStatusFromLegacyError(legacy_hal::wifi_error error) {
 }
 
 }  // namespace implementation
-}  // namespace V1_3
+}  // namespace V1_4
 }  // namespace wifi
 }  // namespace hardware
 }  // namespace android

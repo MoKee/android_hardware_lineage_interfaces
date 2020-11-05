@@ -50,7 +50,7 @@ std::vector<char> makeCharVec(const std::string& str) {
 namespace android {
 namespace hardware {
 namespace wifi {
-namespace V1_3 {
+namespace V1_4 {
 namespace implementation {
 namespace legacy_hal {
 // Legacy HAL functions accept "C" style function pointers, so use global
@@ -479,7 +479,7 @@ WifiLegacyHal::requestFirmwareMemoryDump(const std::string& iface_name) {
 std::pair<wifi_error, uint32_t> WifiLegacyHal::getSupportedFeatureSet(
     const std::string& iface_name) {
     feature_set set;
-    static_assert(sizeof(set) == sizeof(uint32_t),
+    static_assert(sizeof(set) == sizeof(uint64_t),
                   "Some feature_flags can not be represented in output");
     wifi_error status = global_func_table_.wifi_get_supported_feature_set(
         getIfaceHandle(iface_name), &set);
@@ -1449,7 +1449,7 @@ void WifiLegacyHal::invalidate() {
 
 }  // namespace legacy_hal
 }  // namespace implementation
-}  // namespace V1_3
+}  // namespace V1_4
 }  // namespace wifi
 }  // namespace hardware
 }  // namespace android

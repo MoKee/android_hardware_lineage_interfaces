@@ -24,7 +24,7 @@
 namespace android {
 namespace hardware {
 namespace wifi {
-namespace V1_3 {
+namespace V1_4 {
 namespace implementation {
 using hidl_return_util::validateAndCall;
 
@@ -113,7 +113,7 @@ Return<void> WifiStaIface::getBackgroundScanCapabilities(
 }
 
 Return<void> WifiStaIface::getValidFrequenciesForBand(
-    WifiBand band, getValidFrequenciesForBand_cb hidl_status_cb) {
+    V1_0::WifiBand band, getValidFrequenciesForBand_cb hidl_status_cb) {
     return validateAndCall(this, WifiStatusCode::ERROR_WIFI_IFACE_INVALID,
                            &WifiStaIface::getValidFrequenciesForBandInternal,
                            hidl_status_cb, band);
@@ -284,7 +284,7 @@ WifiStatus WifiStaIface::registerEventCallbackInternal(
 
 std::pair<WifiStatus, uint32_t> WifiStaIface::getCapabilitiesInternal() {
     legacy_hal::wifi_error legacy_status;
-    uint32_t legacy_feature_set;
+    uint64_t legacy_feature_set;
     std::tie(legacy_status, legacy_feature_set) =
         legacy_hal_.lock()->getSupportedFeatureSet(ifname_);
     if (legacy_status != legacy_hal::WIFI_SUCCESS) {
@@ -356,7 +356,7 @@ WifiStaIface::getBackgroundScanCapabilitiesInternal() {
 }
 
 std::pair<WifiStatus, std::vector<WifiChannelInMhz>>
-WifiStaIface::getValidFrequenciesForBandInternal(WifiBand band) {
+WifiStaIface::getValidFrequenciesForBandInternal(V1_0::WifiBand band) {
     static_assert(sizeof(WifiChannelInMhz) == sizeof(uint32_t),
                   "Size mismatch");
     legacy_hal::wifi_error legacy_status;
@@ -640,7 +640,7 @@ WifiStaIface::getFactoryMacAddressInternal() {
 }
 
 }  // namespace implementation
-}  // namespace V1_3
+}  // namespace V1_4
 }  // namespace wifi
 }  // namespace hardware
 }  // namespace android

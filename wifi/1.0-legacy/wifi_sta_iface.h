@@ -28,7 +28,7 @@
 namespace android {
 namespace hardware {
 namespace wifi {
-namespace V1_3 {
+namespace V1_4 {
 namespace implementation {
 using namespace android::hardware::wifi::V1_0;
 
@@ -63,7 +63,8 @@ class WifiStaIface : public V1_3::IWifiStaIface {
     Return<void> getBackgroundScanCapabilities(
         getBackgroundScanCapabilities_cb hidl_status_cb) override;
     Return<void> getValidFrequenciesForBand(
-        WifiBand band, getValidFrequenciesForBand_cb hidl_status_cb) override;
+        V1_0::WifiBand band,
+        getValidFrequenciesForBand_cb hidl_status_cb) override;
     Return<void> startBackgroundScan(
         uint32_t cmd_id, const StaBackgroundScanParameters& params,
         startBackgroundScan_cb hidl_status_cb) override;
@@ -128,7 +129,7 @@ class WifiStaIface : public V1_3::IWifiStaIface {
     std::pair<WifiStatus, StaBackgroundScanCapabilities>
     getBackgroundScanCapabilitiesInternal();
     std::pair<WifiStatus, std::vector<WifiChannelInMhz>>
-    getValidFrequenciesForBandInternal(WifiBand band);
+    getValidFrequenciesForBandInternal(V1_0::WifiBand band);
     WifiStatus startBackgroundScanInternal(
         uint32_t cmd_id, const StaBackgroundScanParameters& params);
     WifiStatus stopBackgroundScanInternal(uint32_t cmd_id);
@@ -171,7 +172,7 @@ class WifiStaIface : public V1_3::IWifiStaIface {
 };
 
 }  // namespace implementation
-}  // namespace V1_3
+}  // namespace V1_4
 }  // namespace wifi
 }  // namespace hardware
 }  // namespace android

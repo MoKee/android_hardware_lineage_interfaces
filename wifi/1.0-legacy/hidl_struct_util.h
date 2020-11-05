@@ -21,10 +21,11 @@
 
 #include <android/hardware/wifi/1.0/IWifiChip.h>
 #include <android/hardware/wifi/1.0/types.h>
-#include <android/hardware/wifi/1.2/IWifiChipEventCallback.h>
 #include <android/hardware/wifi/1.2/types.h>
 #include <android/hardware/wifi/1.3/IWifiChip.h>
 #include <android/hardware/wifi/1.3/types.h>
+#include <android/hardware/wifi/1.4/IWifiChipEventCallback.h>
+#include <android/hardware/wifi/1.4/types.h>
 
 #include "wifi_legacy_hal.h"
 
@@ -37,7 +38,7 @@
 namespace android {
 namespace hardware {
 namespace wifi {
-namespace V1_3 {
+namespace V1_4 {
 namespace implementation {
 namespace hidl_struct_util {
 using namespace android::hardware::wifi::V1_0;
@@ -63,12 +64,11 @@ legacy_hal::wifi_power_scenario convertHidlTxPowerScenarioToLegacy_1_2(
     V1_2::IWifiChip::TxPowerScenario hidl_scenario);
 bool convertLegacyWifiMacInfosToHidl(
     const std::vector<legacy_hal::WifiMacInfo>& legacy_mac_infos,
-    std::vector<V1_2::IWifiChipEventCallback::RadioModeInfo>*
-        hidl_radio_mode_infos);
+    std::vector<IWifiChipEventCallback::RadioModeInfo>* hidl_radio_mode_infos);
 
 // STA iface conversion methods.
 bool convertLegacyFeaturesToHidlStaCapabilities(
-    uint32_t legacy_feature_set, uint32_t legacy_logger_feature_set,
+    uint64_t legacy_feature_set, uint32_t legacy_logger_feature_set,
     uint32_t* hidl_caps);
 bool convertLegacyApfCapabilitiesToHidl(
     const legacy_hal::PacketFilterCapabilities& legacy_caps,
@@ -76,7 +76,7 @@ bool convertLegacyApfCapabilitiesToHidl(
 bool convertLegacyGscanCapabilitiesToHidl(
     const legacy_hal::wifi_gscan_capabilities& legacy_caps,
     StaBackgroundScanCapabilities* hidl_caps);
-legacy_hal::wifi_band convertHidlWifiBandToLegacy(WifiBand band);
+legacy_hal::wifi_band convertHidlWifiBandToLegacy(V1_0::WifiBand band);
 bool convertHidlGscanParamsToLegacy(
     const StaBackgroundScanParameters& hidl_scan_params,
     legacy_hal::wifi_scan_cmd_params* legacy_scan_params);
@@ -117,11 +117,11 @@ bool convertHidlNanEnableRequestToLegacy(
 bool convertHidlNanConfigRequestToLegacy(
     const NanConfigRequest& hidl_request,
     legacy_hal::NanConfigRequest* legacy_request);
-bool convertHidlNanEnableRequest_1_2ToLegacy(
+bool convertHidlNanEnableRequest_1_4ToLegacy(
     const NanEnableRequest& hidl_request1,
     const V1_2::NanConfigRequestSupplemental& hidl_request2,
     legacy_hal::NanEnableRequest* legacy_request);
-bool convertHidlNanConfigRequest_1_2ToLegacy(
+bool convertHidlNanConfigRequest_1_4ToLegacy(
     const NanConfigRequest& hidl_request1,
     const V1_2::NanConfigRequestSupplemental& hidl_request2,
     legacy_hal::NanConfigRequest* legacy_request);
@@ -188,7 +188,7 @@ bool convertLegacyVectorOfRttResultToHidl(
     std::vector<RttResult>* hidl_results);
 }  // namespace hidl_struct_util
 }  // namespace implementation
-}  // namespace V1_3
+}  // namespace V1_4
 }  // namespace wifi
 }  // namespace hardware
 }  // namespace android

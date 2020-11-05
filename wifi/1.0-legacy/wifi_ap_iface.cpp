@@ -24,7 +24,7 @@
 namespace android {
 namespace hardware {
 namespace wifi {
-namespace V1_3 {
+namespace V1_4 {
 namespace implementation {
 using hidl_return_util::validateAndCall;
 
@@ -79,7 +79,7 @@ Return<void> WifiApIface::setCountryCode(const hidl_array<int8_t, 2>& code,
 }
 
 Return<void> WifiApIface::getValidFrequenciesForBand(
-    WifiBand band, getValidFrequenciesForBand_cb hidl_status_cb) {
+    V1_0::WifiBand band, getValidFrequenciesForBand_cb hidl_status_cb) {
     return validateAndCall(this, WifiStatusCode::ERROR_WIFI_IFACE_INVALID,
                            &WifiApIface::getValidFrequenciesForBandInternal,
                            hidl_status_cb, band);
@@ -101,7 +101,7 @@ WifiStatus WifiApIface::setCountryCodeInternal(
 }
 
 std::pair<WifiStatus, std::vector<WifiChannelInMhz>>
-WifiApIface::getValidFrequenciesForBandInternal(WifiBand band) {
+WifiApIface::getValidFrequenciesForBandInternal(V1_0::WifiBand band) {
     static_assert(sizeof(WifiChannelInMhz) == sizeof(uint32_t),
                   "Size mismatch");
     legacy_hal::wifi_error legacy_status;
@@ -112,7 +112,7 @@ WifiApIface::getValidFrequenciesForBandInternal(WifiBand band) {
     return {createWifiStatusFromLegacyError(legacy_status), valid_frequencies};
 }
 }  // namespace implementation
-}  // namespace V1_3
+}  // namespace V1_4
 }  // namespace wifi
 }  // namespace hardware
 }  // namespace android
