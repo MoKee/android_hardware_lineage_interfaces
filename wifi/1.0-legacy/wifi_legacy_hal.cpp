@@ -19,6 +19,7 @@
 
 #include <android-base/logging.h>
 #include <cutils/properties.h>
+#include <net/if.h>
 
 #include "hidl_sync_util.h"
 #include "wifi_legacy_hal.h"
@@ -800,13 +801,6 @@ wifi_error WifiLegacyHal::stopSendingOffloadedPacket(
         cmd_id, getIfaceHandle(iface_name));
 }
 
-wifi_error WifiLegacyHal::setScanningMacOui(const std::string& iface_name,
-                                            const std::array<uint8_t, 3>& oui) {
-    std::vector<uint8_t> oui_internal(oui.data(), oui.data() + oui.size());
-    return global_func_table_.wifi_set_scanning_mac_oui(
-        getIfaceHandle(iface_name), oui_internal.data());
-}
-
 wifi_error WifiLegacyHal::selectTxPowerScenario(const std::string& iface_name,
                                                 wifi_power_scenario scenario) {
     return global_func_table_.wifi_select_tx_power_scenario(
@@ -822,6 +816,22 @@ wifi_error WifiLegacyHal::setLatencyMode(const std::string& iface_name,
                                          wifi_latency_mode mode) {
     return global_func_table_.wifi_set_latency_mode(getIfaceHandle(iface_name),
                                                     mode);
+}
+
+wifi_error WifiLegacyHal::setThermalMitigationMode(wifi_thermal_mode mode,
+                                                   uint32_t completion_window) {
+    return global_func_table_.wifi_set_thermal_mitigation_mode(
+        global_handle_, mode, completion_window);
+}
+
+wifi_error WifiLegacyHal::setDscpToAccessCategoryMapping(
+    uint32_t start, uint32_t end, uint32_t access_category) {
+    return global_func_table_.wifi_map_dscp_access_category(
+        global_handle_, start, end, access_category);
+}
+
+wifi_error WifiLegacyHal::resetDscpToAccessCategoryMapping() {
+    return global_func_table_.wifi_reset_dscp_mapping(global_handle_);
 }
 
 std::pair<wifi_error, uint32_t> WifiLegacyHal::getLoggerSupportedFeatureSet(
@@ -1349,6 +1359,7 @@ wifi_error WifiLegacyHal::retrieveIfaceHandles() {
         LOG(ERROR) << "Failed to enumerate interface handles";
         return status;
     }
+    iface_name_to_handle_.clear();
     for (int i = 0; i < num_iface_handles; ++i) {
         std::array<char, IFNAMSIZ> iface_name_arr = {};
         status = global_func_table_.wifi_get_iface_name(
@@ -1413,6 +1424,39 @@ WifiLegacyHal::getGscanCachedResults(const std::string& iface_name) {
         }
     }
     return {status, std::move(cached_scan_results)};
+}
+
+wifi_error WifiLegacyHal::createVirtualInterface(const std::string& ifname,
+                                                 wifi_interface_type iftype) {
+    // Create the interface if it doesn't exist. If interface already exist,
+    // Vendor Hal should return WIFI_SUCCESS.
+    wifi_error status = global_func_table_.wifi_virtual_interface_create(
+        global_handle_, ifname.c_str(), iftype);
+    return handleVirtualInterfaceCreateOrDeleteStatus(ifname, status);
+}
+
+wifi_error WifiLegacyHal::deleteVirtualInterface(const std::string& ifname) {
+    // Delete the interface if it was created dynamically.
+    wifi_error status = global_func_table_.wifi_virtual_interface_delete(
+        global_handle_, ifname.c_str());
+    return handleVirtualInterfaceCreateOrDeleteStatus(ifname, status);
+}
+
+wifi_error WifiLegacyHal::handleVirtualInterfaceCreateOrDeleteStatus(
+    const std::string& ifname, wifi_error status) {
+    if (status == WIFI_SUCCESS) {
+        // refresh list of handlers now.
+        status = retrieveIfaceHandles();
+    } else if (status == WIFI_ERROR_NOT_SUPPORTED) {
+        // Vendor hal does not implement this API. Such vendor implementations
+        // are expected to create / delete interface by other means.
+
+        // check if interface exists.
+        if (if_nametoindex(ifname.c_str())) {
+            status = retrieveIfaceHandles();
+        }
+    }
+    return status;
 }
 
 void WifiLegacyHal::invalidate() {

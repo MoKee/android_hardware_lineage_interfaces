@@ -252,13 +252,16 @@ class WifiLegacyHal {
         const std::array<uint8_t, 6>& dst_address, uint32_t period_in_ms);
     wifi_error stopSendingOffloadedPacket(const std::string& iface_name,
                                           uint32_t cmd_id);
-    wifi_error setScanningMacOui(const std::string& iface_name,
-                                 const std::array<uint8_t, 3>& oui);
     virtual wifi_error selectTxPowerScenario(const std::string& iface_name,
                                              wifi_power_scenario scenario);
     virtual wifi_error resetTxPowerScenario(const std::string& iface_name);
     wifi_error setLatencyMode(const std::string& iface_name,
                               wifi_latency_mode mode);
+    wifi_error setThermalMitigationMode(wifi_thermal_mode mode,
+                                        uint32_t completion_window);
+    wifi_error setDscpToAccessCategoryMapping(uint32_t start, uint32_t end,
+                                              uint32_t access_category);
+    wifi_error resetDscpToAccessCategoryMapping();
     // Logger/debug functions.
     std::pair<wifi_error, uint32_t> getLoggerSupportedFeatureSet(
         const std::string& iface_name);
@@ -367,6 +370,11 @@ class WifiLegacyHal {
     wifi_error setCountryCode(const std::string& iface_name,
                               std::array<int8_t, 2> code);
 
+    // interface functions.
+    virtual wifi_error createVirtualInterface(const std::string& ifname,
+                                              wifi_interface_type iftype);
+    virtual wifi_error deleteVirtualInterface(const std::string& ifname);
+
    private:
     // Retrieve interface handles for all the available interfaces.
     wifi_error retrieveIfaceHandles();
@@ -378,6 +386,9 @@ class WifiLegacyHal {
     std::pair<wifi_error, std::vector<wifi_cached_scan_results>>
     getGscanCachedResults(const std::string& iface_name);
     void invalidate();
+    // Handles wifi (error) status of Virtual interface create/delete
+    wifi_error handleVirtualInterfaceCreateOrDeleteStatus(
+        const std::string& ifname, wifi_error status);
 
     // Global function table of legacy HAL.
     wifi_hal_fn global_func_table_;
