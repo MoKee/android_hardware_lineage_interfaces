@@ -3,6 +3,7 @@
 hidl_interface {
     name: "vendor.mokee.trust@1.0",
     root: "vendor.mokee",
+    system_ext_specific: true,
     srcs: [
         "IUsbRestrict.hal",
     ],
@@ -11,4 +12,3 @@ hidl_interface {
     ],
     gen_java: true,
 }
-
