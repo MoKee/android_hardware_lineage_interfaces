@@ -32,12 +32,14 @@ cc_defaults {
 cc_binary {
     name: "mokee.trust@1.0-service",
     init_rc: ["mokee.trust@1.0-service.rc"],
+    vintf_fragments: ["mokee.trust@1.0-service.xml"],
     defaults: ["trust_defaults"],
 }
 
 cc_binary {
     name: "vendor.mokee.trust@1.0-service",
     init_rc: ["vendor.mokee.trust@1.0-service.rc"],
+    vintf_fragments: ["vendor.mokee.trust@1.0-service.xml"],
     defaults: ["trust_defaults"],
     proprietary: true,
 }
